@@ -1,1 +1,1 @@
-dotnet publish -r win-x64 -c Release --self-contained --output "../native"
+dotnet publish -r win-x64 -c Release --self-contained --output "C:\Users\shark\source\repos\GmodExtractorUI\GmodExtractorUI\bin\Release\netcoreapp3.1\win-x64"
