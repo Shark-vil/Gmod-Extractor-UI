@@ -136,7 +136,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Height="30" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
-                                    Click="OnExtract">Извлечь</Button>
+                                    Click="OnExtract">Extract</Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
