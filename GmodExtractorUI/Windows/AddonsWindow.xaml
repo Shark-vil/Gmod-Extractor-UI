@@ -1,0 +1,153 @@
+﻿<Window x:Class="GmodExtractorUI.Windows.AddonsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GmodExtractorUI.Windows"
+        xmlns:models="clr-namespace:GmodExtractorUI.Models"
+        mc:Ignorable="d"
+        Title="Garry's Mod Extractor 2020 - List of addons" Height="450" Width="800" 
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="PlaceholderTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="True">
+                            <Grid>
+                                <ScrollViewer x:Name="PART_ContentHost" />
+                                <TextBlock x:Name="textBlock"
+                                   Margin="2,0,0,0"
+                                   Foreground="{TemplateBinding BorderBrush}"
+                                   IsHitTestVisible="False"
+                                   Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="textBlock" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.56" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF7EB4EA" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF569DE5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="400*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="25*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1">
+            <Menu>
+                <MenuItem Header="Extracting">
+                    <MenuItem Header="Extract All" x:Name="Extract_All"></MenuItem>
+                    <MenuItem Header="Extract selected" x:Name="Extract_Selected" ></MenuItem>
+                </MenuItem>
+                <ComboBox x:Name="ComboBox_Filters" Width="150"
+                          IsEditable="True" IsReadOnly="True" Text="Filters">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:ComboCheckBox}">
+                            <CheckBox Checked="CheckBox_Checked_Filter" Unchecked="CheckBox_Unchecked_Filter" 
+                                      Content="{Binding Name}" IsChecked="{Binding IsChecked}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Menu>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <TextBox x:Name="TextBox_Search" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Search..." TextWrapping="NoWrap"/>
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <DataGrid x:Name="DataGrid_Addons" AutoGenerateColumns="False" CanUserAddRows="False" 
+                      VirtualizingPanel.IsVirtualizing="False" GridLinesVisibility="None">
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DarkGray"/>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="50" Header="ID" Binding="{Binding Path=Id}" IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="FontSize" Value="14" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="Logo" Width="100" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Width="100" Height="100" Source="{Binding Path=Image}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Information" IsReadOnly="True" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Path=Name}" FontSize="16"/>
+                                            <TextBlock Text=" - " FontSize="16"/>
+                                            <TextBlock Text="{Binding Path=AddonId}" FontSize="16"/>
+                                        </StackPanel>
+                                        <Separator/>
+                                        <TextBox Text="{Binding Path=Description}" TextWrapping="Wrap" BorderThickness="0" IsReadOnly="True"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <!--<DataGridCheckBoxColumn Header="Выбрать" Width="100" Binding="{Binding Path=IsChecked}"/>-->
+                    <DataGridTemplateColumn Header="Select" Width="100">
+                        <DataGridTemplateColumn.CellTemplate >
+                            <DataTemplate>
+                                <CheckBox Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" 
+                                          IsChecked="{Binding Path=IsChecked}" 
+                                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <CheckBox.LayoutTransform>
+                                        <ScaleTransform ScaleX="5" ScaleY="5" />
+                                    </CheckBox.LayoutTransform>
+                                </CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Actions" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Height="30" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
+                                    Click="OnExtract">Извлечь</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="0">
+            <TextBlock x:Name="StatusBar_ProcessStep"/>
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1">
+            <ProgressBar x:Name="ProgressBar_Loading"/>
+        </Grid>
+    </Grid>
+</Window>
