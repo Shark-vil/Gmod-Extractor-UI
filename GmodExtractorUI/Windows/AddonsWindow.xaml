@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GmodExtractorUI.Windows"
         xmlns:models="clr-namespace:GmodExtractorUI.Models"
         mc:Ignorable="d"
-        Title="Garry's Mod Extractor 2020 - Список дополнений" Height="450" Width="800" 
+        Title="Garry's Mod Extractor 2020 - List of addons" Height="450" Width="800" 
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="PlaceholderTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -60,12 +60,12 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1">
             <Menu>
-                <MenuItem Header="Извлечение">
-                    <MenuItem Header="Извлечь всё" x:Name="Extract_All"></MenuItem>
-                    <MenuItem Header="Извлечь выбранные" x:Name="Extract_Selected" ></MenuItem>
+                <MenuItem Header="Extracting">
+                    <MenuItem Header="Extract All" x:Name="Extract_All"></MenuItem>
+                    <MenuItem Header="Extract selected" x:Name="Extract_Selected" ></MenuItem>
                 </MenuItem>
                 <ComboBox x:Name="ComboBox_Filters" Width="150"
-                          IsEditable="True" IsReadOnly="True" Text="Фильтры">
+                          IsEditable="True" IsReadOnly="True" Text="Filters">
                     <ComboBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:ComboCheckBox}">
                             <CheckBox Checked="CheckBox_Checked_Filter" Unchecked="CheckBox_Unchecked_Filter" 
@@ -76,7 +76,7 @@
             </Menu>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="1">
-            <TextBox x:Name="TextBox_Search" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Поиск..." TextWrapping="NoWrap"/>
+            <TextBox x:Name="TextBox_Search" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Search..." TextWrapping="NoWrap"/>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <DataGrid x:Name="DataGrid_Addons" AutoGenerateColumns="False" CanUserAddRows="False" 
@@ -94,14 +94,14 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTemplateColumn Header="Логотип" Width="100" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Logo" Width="100" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Image Width="100" Height="100" Source="{Binding Path=Image}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Информация" IsReadOnly="True" Width="*">
+                    <DataGridTemplateColumn Header="Information" IsReadOnly="True" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -119,7 +119,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <!--<DataGridCheckBoxColumn Header="Выбрать" Width="100" Binding="{Binding Path=IsChecked}"/>-->
-                    <DataGridTemplateColumn Header="Выбрать" Width="100">
+                    <DataGridTemplateColumn Header="Select" Width="100">
                         <DataGridTemplateColumn.CellTemplate >
                             <DataTemplate>
                                 <CheckBox Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" 
@@ -132,7 +132,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Действия" Width="150">
+                    <DataGridTemplateColumn Header="Actions" Width="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Height="30" VerticalAlignment="Center" HorizontalAlignment="Stretch" 

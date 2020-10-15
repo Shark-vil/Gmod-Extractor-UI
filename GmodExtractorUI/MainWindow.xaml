@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GmodExtractorUI"
         mc:Ignorable="d"
-        Title="Garry's Mod Extractor 2020 - Главное меню" Height="450" Width="370" 
+        Title="Garry's Mod Extractor 2020 - Main menu" Height="450" Width="370" 
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
         <TabControl>
-            <TabItem Header="Меню">
+            <TabItem Header="Menu">
                 <Grid Background="#FFE5E5E5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20*"/>
@@ -23,30 +23,31 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Row="1" Grid.Column="1">
                         <StackPanel Orientation="Vertical">
-                            <Button x:Name="Button_Addons" Height="25" Content="Список дополнений"/>
+                            <Button x:Name="Button_Addons" Height="25" Content="List of addons" Margin="10"/>
+                            <Button x:Name="Button_ConfigRefresh" Height="25" Content="Recreate config" Margin="10"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Настройки">
+            <TabItem Header="Settings">
                 <Grid Background="#FFE5E5E5">
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="Путь к каталогу игры" FontSize="16"/>
+                        <TextBlock Text="Path to game directory" FontSize="16"/>
                         <TextBox x:Name="TextBox_GameFolder" Height="25"/>
                         
                         <Separator Margin="0,20,0,0"/>
-                        
-                        <TextBlock Text="Путь к каталогу контента мастерской" FontSize="16"/>
+
+                        <TextBlock Text="Workshop content directory path" FontSize="16"/>
                         <TextBox x:Name="TextBox_WorkshopFolder" Height="25"/>
                         
                         <Separator Margin="0,20,0,0"/>
                         
-                        <TextBlock Text="Путь к каталогу извлечения" FontSize="16"/>
+                        <TextBlock Text="Extract directory path" FontSize="16"/>
                         <TextBox x:Name="TextBox_ExtractFolder" Height="25"/>
 
                         <Separator Margin="0,20,0,0"/>
 
-                        <TextBlock Text="Путь до 7-Zip архиватора" FontSize="16"/>
+                        <TextBlock Text="Path to 7-Zip archiver" FontSize="16"/>
                         <TextBox x:Name="TextBox_SevenZipExe" Height="25"/>
                     </StackPanel>
                 </Grid>

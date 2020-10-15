@@ -41,6 +41,19 @@ namespace GmodExtractorUI
             TextBox_WorkshopFolder.TextChanged += TextBox_WorkshopFolder_TextChanged;
 
             Button_Addons.Click += Button_Addons_Click;
+            Button_ConfigRefresh.Click += Button_ConfigRefresh_Click;
+        }
+
+        private void Button_ConfigRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            string ConfigPath = System.IO.Path.Combine(Extractor.ConfigDirectoryPath, "settings.cfg");
+
+            if (System.IO.File.Exists(ConfigPath))
+                System.IO.File.Delete(ConfigPath);
+
+            ConfigValidator();
+
+            MessageBox.Show("The config has been updated!");
         }
 
         private void Button_Addons_Click(object sender, RoutedEventArgs e)

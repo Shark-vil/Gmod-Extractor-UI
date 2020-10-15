@@ -19,6 +19,7 @@ using System.Diagnostics;
 using GmaExtractorLibrary.Models;
 using System.Threading;
 using System.Net;
+using System.Windows.Threading;
 
 namespace GmodExtractorUI.Windows
 {
@@ -34,23 +35,25 @@ namespace GmodExtractorUI.Windows
             new ComboCheckBox
             {
                 Key = "global",
-                Name = "Глубокий поиск",
+                Name = "Deep search",
                 IsChecked = true
             },
             new ComboCheckBox
             {
                 Key = "normal",
-                Name = "Умеренный поиск",
+                Name = "Normal search",
                 IsChecked = false
             },
             new ComboCheckBox
             {
                 Key = "desc",
-                Name = "Искать в описании",
+                Name = "Search in description",
                 IsChecked = false
             }
         };
 
+        private DispatcherTimer SearchTimer;
+        private string OldSearchText;
         private bool SearchClose = false;
         private bool IsFirstLoading = true;
         protected internal static GmadProcessModel GmadObject = null;
@@ -108,17 +111,45 @@ namespace GmodExtractorUI.Windows
         private void SyncCheckedCollection()
         {
             if (SearchCollection.Count != 0)
-                foreach(var AddonItem in SearchCollection)
+                foreach (var AddonItem in SearchCollection)
                     AddonsCollection.FirstOrDefault(x => x.Id == AddonItem.Id).IsChecked = AddonItem.IsChecked;
         }
 
         private void TextBox_Search_TextChanged(object sender, TextChangedEventArgs e)
         {
+            OldSearchText = TextBox_Search.Text;
+            StartSearchAddonTimer();
+        }
+
+        private void StartSearchAddonTimer()
+        {
+            if (SearchTimer != null && SearchTimer.IsEnabled)
+                SearchTimer.Stop();
+
+            SearchTimer = new DispatcherTimer();
+            SearchTimer.Interval = TimeSpan.FromMilliseconds(500);
+            SearchTimer.Tick += SearchAddonTimerHandler;
+            SearchTimer.Start();
+        }
+
+        private void SearchAddonTimerHandler(object sender, EventArgs e)
+        {
+            if (TextBox_Search.Text != OldSearchText)
+                return;
+
             SearchAddon();
+            SearchTimer.Stop();
         }
 
         private void SearchAddon()
         {
+            if (TextBox_Search.Text.Length == 0)
+            {
+                SyncCheckedCollection();
+                DataGrid_Addons.ItemsSource = AddonsCollection;
+                return;
+            }
+
             if (IsFirstLoading)
             {
                 TextBox_Search.Text = "";
@@ -143,52 +174,52 @@ namespace GmodExtractorUI.Windows
             SearchCollection.Clear();
             DataGrid_Addons.ItemsSource = SearchCollection;
 
-            if (TextBox_Search.Text.Length == 0)
-            {
-                SyncCheckedCollection();
-                DataGrid_Addons.ItemsSource = AddonsCollection;
-            }
-            else
-            {
-                string SearchWord = TextBox_Search.Text.ToLower();
-                SearchClose = false;
+            string SearchWord = TextBox_Search.Text.ToLower();
+            SearchClose = false;
 
-                var t = Task.Run(async delegate
+            var t = Task.Run(delegate
+            {
+                bool IsGlobal = FiltersCollection.FirstOrDefault(x => x.Key == "global").IsChecked;
+                bool IsNormal = FiltersCollection.FirstOrDefault(x => x.Key == "normal").IsChecked;
+                bool IsDescription = FiltersCollection.FirstOrDefault(x => x.Key == "desc").IsChecked;
+
+                Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() => ProgressBar_Loading.IsIndeterminate = true);
+
+                foreach (var AddonItem in AddonsCollection)
                 {
-                    bool IsGlobal = FiltersCollection.FirstOrDefault(x => x.Key == "global").IsChecked;
-                    bool IsNormal = FiltersCollection.FirstOrDefault(x => x.Key == "normal").IsChecked;
-                    bool IsDescription = FiltersCollection.FirstOrDefault(x => x.Key == "desc").IsChecked;
+                    if (SearchClose)
+                        break;
 
-                    foreach (var AddonItem in AddonsCollection)
+                    if (SearchCollection.FirstOrDefault(x => x.Id == AddonItem.Id) != null)
+                        continue;
+
+                    string Pattern = @$"(\w*)({SearchWord})(\w*)";
+
+                    if (!IsGlobal && IsNormal)
+                        Pattern = @$"^({SearchWord})(\w*)";
+
+                    if (RegexMatchEx(AddonItem.Name.ToLower(), Pattern))
                     {
-                        if (SearchClose)
-                            break;
+                        Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() => SearchCollection.Add(AddonItem));
+                        continue;
+                    }
 
-                        if (SearchCollection.FirstOrDefault(x => x.Id == AddonItem.Id) != null)
-                            continue;
-
-                        string Pattern = @$"(\w*)({SearchWord})(\w*)";
-
-                        if (!IsGlobal && IsNormal)
-                            Pattern = @$"^({SearchWord})(\w*)";
-
-                        if (RegexMatchEx(AddonItem.Name.ToLower(), Pattern))
+                    if (IsDescription)
+                        if (RegexMatchEx(AddonItem.Description.ToLower(), Pattern))
                         {
                             Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() => SearchCollection.Add(AddonItem));
                             continue;
                         }
 
-                        if (IsDescription)
-                            if (RegexMatchEx(AddonItem.Description.ToLower(), Pattern))
-                            {
-                                Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() => SearchCollection.Add(AddonItem));
-                                continue;
-                            }
+                    Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() =>
+                    StatusBar_ProcessStep.Text = $"Found - {AddonItem.Name}");
+                }
 
-                        await Task.Delay(10);
-                    }
-                });
-            }
+                Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() =>
+                    StatusBar_ProcessStep.Text = $"Search completed");
+
+                Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() => ProgressBar_Loading.IsIndeterminate = false);
+            });
         }
 
         private bool RegexMatchEx(string _regexInput, string _regexPattern, RegexOptions _regexOptions = RegexOptions.IgnoreCase)
@@ -323,7 +354,7 @@ namespace GmodExtractorUI.Windows
                 Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() =>
                 {
                     ProgressBar_Loading.Value = 0;
-                    StatusBar_ProcessStep.Text = "Список дополнений загружен";
+                    StatusBar_ProcessStep.Text = "List of addons loaded";
                     IsFirstLoading = false;
                     DataGrid_Addons.IsEnabled = true;
                 });
@@ -346,7 +377,7 @@ namespace GmodExtractorUI.Windows
             Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() =>
             {
                 ProgressBar_Loading.IsIndeterminate = true;
-                StatusBar_ProcessStep.Text = $"Извлечение - {AddonItem.Name}";
+                StatusBar_ProcessStep.Text = $"Extracting - {AddonItem.Name}";
             });
 
             GmadObject = Extractor.ExtractSingle(AddonItem.AddonId, false);
@@ -355,7 +386,7 @@ namespace GmodExtractorUI.Windows
             Storage.WindowsStorage.AddonsWindow.Dispatcher.Invoke(() =>
             {
                 ProgressBar_Loading.IsIndeterminate = false;
-                StatusBar_ProcessStep.Text = "Извлечение завершено";
+                StatusBar_ProcessStep.Text = "Extraction completed";
             });
         }
 
